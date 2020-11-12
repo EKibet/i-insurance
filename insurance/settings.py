@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY','h9er9u4t9q3uq4')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOST')
+ALLOWED_HOSTS =['.localhost', '.herokuapp.com', '.127.0.0.1']
 
 
 # Application definition
@@ -75,25 +75,25 @@ WSGI_APPLICATION = 'insurance.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if os.getenv('MODE')=="dev":
-   DATABASES = {
-       'default': {
-           'ENGINE': 'django.db.backends.postgresql_psycopg2',
-           'NAME': os.getenv('DB_NAME'),
-           'USER': os.getenv('DB_USER'),
-           'PASSWORD': os.getenv('DB_PASSWORD'),
-           'HOST': os.getenv('DB_HOST'),
-           'PORT': '',
-       }
-       
-   }
+# if os.getenv('MODE')=="dev":
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'iinsurance',
+        'USER': 'moringa',
+        'PASSWORD': 'Access',
+    #    'HOST': os.getenv('DB_HOST'),
+    #    'PORT': '',
+    }
+    
+}
 # production
-else:
-   DATABASES = {
-       'default': dj_database_url.config(
-           default=os.getenv('DATABASE_URL')
-       )
-   }
+# else:
+#    DATABASES = {
+#        'default': dj_database_url.config(
+#            default=os.getenv('DATABASE_URL')
+#        )
+#    }
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
@@ -121,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Nairobi/Africa'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -134,3 +134,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+
+# only refers to the location where your static files should end up after running manage.py collectstatic. you shouldn't really need collectstatic) when developing locally
+STATIC_ROOT = 'staticfiles'
+
+
+STATICFILES_DIRS = (    
+    os.path.join(BASE_DIR, '../static'),
+)
