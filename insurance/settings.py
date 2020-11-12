@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +34,18 @@ DEBUG = os.getenv('DEBUG')
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOST')
 
 
+DATABASES = {
+    'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'iinsurance',
+        'USER': 'Bryon',
+        'PASSWORD':'nayere'
+    }
+}
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +55,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'policy',
+    'tinymce',
+    'cloudinary',
+
+
 ]
 
 MIDDLEWARE = [
@@ -121,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Nairobi/Africa'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -133,3 +155,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+STATIC_URL = '/static/'
+cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
+
+DATABASE_URL = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+
+DATABASES = {'default': dj_database_url.config(default=DATABASE_URL)}
+
+AUTH_USER_MODEL = 'policy.User'
