@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
 from django.db.models.signals import post_save
+from django.utils.translation import gettext as _
 # Create your models here.
 
 #
@@ -29,8 +30,12 @@ class User(AbstractBaseUser):
     address = models.CharField(max_length=100)
     
     
+    username = None
+    email = models.EmailField(_('email address'), unique=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
 
     def get_full_name(self):
         return self.email

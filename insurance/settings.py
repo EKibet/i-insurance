@@ -161,3 +161,5 @@ cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'
 DATABASE_URL = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
 DATABASES = {'default': dj_database_url.config(default=DATABASE_URL)}
+
+AUTH_USER_MODEL = 'policy.User'
