@@ -32,6 +32,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY','h9er9u4t9q3uq4')
 DEBUG = True
 
 ALLOWED_HOSTS =['.localhost', '.herokuapp.com', '.127.0.0.1']
+AUTH_USER_MODEL='policy.User'
 
 
 DATABASES = {
@@ -59,7 +60,9 @@ INSTALLED_APPS = [
     'policy',
     'tinymce',
     'cloudinary',
-    
+    'authentication',
+    # 'rest_framework.authtokenknox'
+    'knox',
 
 
 ]
@@ -105,7 +108,7 @@ DATABASES = {
         'NAME': 'iinsurance',
         'USER': 'moringa',
         'PASSWORD': 'Access',
-    #    'HOST': os.getenv('DB_HOST'),
+        # 'HOST': os.getenv('DB_HOST'),
     #    'PORT': '',
     }
     
@@ -153,6 +156,8 @@ USE_L10N = True
 USE_TZ = True
 
 
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
@@ -169,7 +174,12 @@ STATICFILES_DIRS = (
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',  # <-- And here
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
 }
+
+
+cloudinary.config( 
+  cloud_name = "oduolmoringa", 
+  api_key = "447468715252465", 
+  api_secret = "VSquGjV4IRTcJID7brmZlvBG4nY" 
+)
