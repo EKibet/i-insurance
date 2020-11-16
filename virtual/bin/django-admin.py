@@ -1,4 +1,4 @@
-#!/Users/Bryon/Documents/Python/Moringa_Django/Pro_Dev/BE_Iinsurance/i-insuranceBE/virtual/bin/python
+#!/home/moringa/Documents/Pro-dev/iinsurance-BE/virtual/bin/python
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 
