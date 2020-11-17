@@ -10,44 +10,30 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
 import os
-import dj_database_url
+from pathlib import Path
+import django
+
 import cloudinary
-import cloudinary.uploader
 import cloudinary.api
-
-
+import cloudinary.uploader
+import dj_database_url
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY','h9er9u4t9q3uq4')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS =['.localhost', '.herokuapp.com', '.127.0.0.1']
-AUTH_USER_MODEL='policy.User'
-
-
-DATABASES = {
-    'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iinsurance',
-        'USER': 'Bryon',
-        'PASSWORD':'nayere'
-    }
-}
-
-
-# Application definition
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -60,11 +46,6 @@ INSTALLED_APPS = [
     'policy',
     'tinymce',
     'cloudinary',
-    'authentication',
-    # 'rest_framework.authtokenknox'
-    'knox',
-
-
 ]
 
 MIDDLEWARE = [
@@ -78,6 +59,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'insurance.urls'
+AUTH_USER_MODEL = 'policy.User'
 
 TEMPLATES = [
     {
@@ -100,26 +82,25 @@ WSGI_APPLICATION = 'insurance.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-# if os.getenv('MODE')=="dev":
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iinsurance',
-        'USER': 'moringa',
-        'PASSWORD': 'Access',
-        # 'HOST': os.getenv('DB_HOST'),
-    #    'PORT': '',
+if os.getenv('MODE')=="dev":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': '',
+        }
+        
     }
-    
-}
 # production
-# else:
-#    DATABASES = {
-#        'default': dj_database_url.config(
-#            default=os.getenv('DATABASE_URL')
-#        )
-#    }
+else:
+   DATABASES = {
+       'default': dj_database_url.config(
+           default=os.getenv('DATABASE_URL')
+       )
+   }
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
@@ -173,13 +154,5 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, '../static'),
 )
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
-}
 
 
-cloudinary.config( 
-  cloud_name = "oduolmoringa", 
-  api_key = "447468715252465", 
-  api_secret = "VSquGjV4IRTcJID7brmZlvBG4nY" 
-)
