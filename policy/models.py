@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.dispatch import receiver
 from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
+    BaseUserManager, AbstractBaseUser,UserManager
 )
 from django.db.models.signals import post_save
 from django.utils.translation import gettext as _
@@ -55,6 +55,10 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class CommonUserFieldMixin(models.Model):
+    phone_no = models.CharField(max_length=20,blank=True)
+    address = models.CharField(max_length=100,blank=True)
+    id_no = models.IntegerField(default=0)
 
 class User(AbstractBaseUser,PermissionsMixin):
     first_name = models.CharField(max_length=50, blank=True)
@@ -151,7 +155,6 @@ class UserProfile(CommonUserFieldMixin):
     policy = models.ForeignKey(Policy, on_delete=models.SET_NULL, null=True, related_name='userprofile', blank=True)
     # policy = models.ForeignKey(Policy, on_delete=models.SET_NULL, null=True, related_name='userprofile', blank=True)
     bank_accountno = models.IntegerField(default=0)
-
     def __str__(self):
         return self.gender
     @receiver(post_save, sender=User)
@@ -177,11 +180,10 @@ class AgentProfile(CommonUserFieldMixin):
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            AgentProfile.objects.create(user=instance)
-    @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-            instance.agentprofile.save()
+
+    profile_picture = CloudinaryField('image')
+    def __str__(self):
+        return self.remarks
 
 
 class Category(models.Model):
