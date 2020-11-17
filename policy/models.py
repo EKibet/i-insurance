@@ -153,8 +153,9 @@ class UserProfile(CommonUserFieldMixin):
     EMPLOYMENT_CHOICES = (('E', 'Employed'), ('U', 'Unemployed'), ('S', 'Self-employed'))
     employment_status =models.CharField(max_length=1 ,choices=EMPLOYMENT_CHOICES)
     policy = models.ForeignKey(Policy, on_delete=models.SET_NULL, null=True, related_name='userprofile', blank=True)
-    # policy = models.ForeignKey(Policy, on_delete=models.SET_NULL, null=True, related_name='userprofile', blank=True)
     bank_accountno = models.IntegerField(default=0)
+
+
     def __str__(self):
         return self.gender
     @receiver(post_save, sender=User)
@@ -181,6 +182,22 @@ class AgentProfile(CommonUserFieldMixin):
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
 
+        return self.job_number
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            AgentProfile.objects.create(user=instance)
+            
+    @receiver(post_save, sender=User)
+    def save_user_profile(sender, instance, **kwargs):
+            instance.agentprofile.save()
+
+
+class AdminProfile(CommonUserFieldMixin):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    cv = CloudinaryField('image')
     profile_picture = CloudinaryField('image')
     def __str__(self):
         return self.remarks

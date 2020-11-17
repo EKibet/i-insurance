@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 from django.conf import settings
 # from django.contrib.auth import authenticate
+=======
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+>>>>>>> removecomments
 from django.contrib import auth
 from django.contrib.auth import get_user_model as user_model
 from django.contrib.auth.models import User
@@ -13,7 +19,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from .models import *
 from .models import User, UserProfile
 
-# User = settings.AUTH_USER_MODEL
+
 User = user_model()
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
@@ -26,7 +32,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("first_name", "middle_name","last_name","id_no","email","bio","is_admin","is_agent","date_joined","phone_no","address","pk")
         extra_kwargs = {'password': {'write_only': True}}
 
+    password=serializers.CharField(max_length=68, min_length=6, write_only=True) 
 
+    def validate (self, attrs):
+        email= attrs.get('email', '')
+        username =attrs.get('username', '')
+
+        return attrs
 
 class RequestPasswordResetSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(required=True)
@@ -91,7 +103,7 @@ class LoginSerializer(serializers.ModelSerializer):
         user = auth.authenticate(email=email, password=password)
 
         if user is not None and user.is_active:
-        # if not user.is_active:
+       
             raise AuthenticationFailed('Account disabled, contact admin')
 
         if user is not None and user.is_verified:
