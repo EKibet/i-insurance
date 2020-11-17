@@ -169,7 +169,6 @@ STATIC_URL = '/static/'
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
 cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
-# cloudinary.config(cloud_name='dqtxp6kux', api_key='359879935478934', api_secret='CAHvqoEz-PvxH4Gp5Q7USk3RBC4')
 
 
 AUTHENTICATION_BACKENDS = (
