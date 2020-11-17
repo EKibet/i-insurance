@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-# from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 from .models import *
 from django.contrib.auth import get_user_model as user_model
 from django.conf import settings
 
-# User = settings.AUTH_USER_MODEL
+
 User = user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -17,9 +17,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate (self, attrs):
         email= attrs.get('email', '')
         username =attrs.get('username', '')
-
-        # if not username.isalnum():
-        #     raise serializers.ValidationError('The username should contain alphanumeric characters')
 
         return attrs
 
@@ -58,7 +55,7 @@ class LoginSerializer(serializers.ModelSerializer):
         user = auth.authenticate(email=email, password=password)
 
         if user is not None and user.is_active:
-        # if not user.is_active:
+       
             raise AuthenticationFailed('Account disabled, contact admin')
 
         if user is not None and user.is_verified:
