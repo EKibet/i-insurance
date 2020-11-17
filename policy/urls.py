@@ -1,7 +1,12 @@
 from django.urls import path
-from .views import RegisterAPI
+from . import views
+from .views import PasswordTokenCheckAPI,RequestPasswordReset,SetNEwPasswordAPIView,RegisterAPI
 
-
-urlpatterns = [
+app_name='policy'
+urlpatterns=[
+    path('request-reset-email/',RequestPasswordReset.as_view(),name='request-reset-email'),
+    path('password-reset/<u_id64>/<token>/',PasswordTokenCheckAPI.as_view(),name='password_reset'),
+    path('pasword-reseet-complete/',SetNEwPasswordAPIView.as_view(),name='password reset complete'),
     path('api/register/', RegisterAPI.as_view(), name='register'),
+
 ]
