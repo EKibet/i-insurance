@@ -17,7 +17,9 @@ from django.contrib.auth.models import PermissionsMixin
 
 # accounts.models.py
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+
+    def create_user(self,first_name,middle_name,last_name, email, password=None):
+
         """
         Creates and saves a User with the given email and password.
         """
