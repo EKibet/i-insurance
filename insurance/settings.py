@@ -20,18 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY','h9er9u4t9q3uq4')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS =['.localhost', '.herokuapp.com', '.127.0.0.1']
-# DATABASES = {
-#     'default': {
-#         # 'ENGINE': 'django.db.backends.sqlite3',
-#         # 'NAME': BASE_DIR / 'db.sqlite3',
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'iinsurance',
-#         'USER': 'Bryon',
-#         'PASSWORD':'nayere'
-#     }
-# }
-# Application definition
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -78,7 +67,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'iinsurance',
         'USER': 'moringa',
-        'PASSWORD': 'Access',
+        'PASSWORD': '*****',
         # 'HOST': os.getenv('DB_HOST'),
     #    'PORT': '',
     }
@@ -125,3 +114,12 @@ STATICFILES_DIRS = (
 )
 
 AUTH_USER_MODEL = 'policy.User'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = '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'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

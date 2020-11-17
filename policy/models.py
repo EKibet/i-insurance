@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
             email,
             password=password,
         )
-        user.agent = True
+        user.staff= True
         user.save(using=self._db)
         return user
 
@@ -101,9 +101,9 @@ class User(AbstractBaseUser,PermissionsMixin):
         return self.admin
 
     @property
-    def is_agent(self):
+    def is_staff(self):
         "Is the user active?"
-        return self.agent
+        return self.staff
 
 class CommonUserFieldMixin(models.Model):
     phone_no = models.CharField(max_length=20,blank=True)
