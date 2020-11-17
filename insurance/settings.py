@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
 import dj_database_url
 import cloudinary
 import cloudinary.uploader
@@ -34,18 +35,27 @@ DEBUG = os.getenv('DEBUG')
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOST')
 
 
-DATABASES = {
-    'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iinsurance',
-        'USER': 'Bryon',
-        'PASSWORD':'nayere'
-    }
+# DATABASES = {
+#     'default': {
+        
+#         'ENGINE': 'django.db.backends.postgresql',
+#         # 'NAME': 'beinsurance',
+#         # 'USER': 'Bryon',
+#         # 'PASSWORD':'nayere'
+#     }
+# }
+
+
+AUTH_USER_MODEL = 'policy.User'
+
+REST_FRSMEWORK={
+     'NON_FIELDS_ERRORS_KEY':'error',
+     'DEFAULT_AUTHENTIFICATION_CLASSES':(
+        'rest_framework_simplejwt.policy.JWTAuthentification',
+    )
 }
 
-
+DEBUG=True
 # Application definition
 
 INSTALLED_APPS = [
@@ -59,6 +69,10 @@ INSTALLED_APPS = [
     'policy',
     'tinymce',
     'cloudinary',
+    'rest_framework.authtoken',
+    'drf_yasg',
+    'corsheaders',
+   
 
 
 ]
@@ -71,8 +85,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS=True
 ROOT_URLCONF = 'insurance.urls'
 
 TEMPLATES = [
@@ -97,26 +114,24 @@ WSGI_APPLICATION = 'insurance.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if os.getenv('MODE')=="dev":
-   DATABASES = {
-       'default': {
-           'ENGINE': 'django.db.backends.postgresql_psycopg2',
-           'NAME': os.getenv('DB_NAME'),
-           'USER': os.getenv('DB_USER'),
-           'PASSWORD': os.getenv('DB_PASSWORD'),
-           'HOST': os.getenv('DB_HOST'),
-           'PORT': '',
-       }
-       
-   }
+# if os.getenv('MODE')=="dev":
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'beinsurance',
+        'USER': 'Bryon',
+        'PASSWORD': 'nayere',
+        # 'HOST': os.getenv('DB_HOST'),
+    #    'PORT': '',
+    }
+}
 # production
-else:
-   DATABASES = {
-       'default': dj_database_url.config(
-           default=os.getenv('DATABASE_URL')
-       )
-   }
-
+# else:
+#    DATABASES = {
+#        'default': dj_database_url.config(
+#            default=os.getenv('DATABASE_URL')
+#        )
+#    }
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 # Password validation
@@ -137,6 +152,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'policy.backends.JWTAuthentication',
+    )
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -156,10 +176,34 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
 
-DATABASE_URL = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
-DATABASES = {'default': dj_database_url.config(default=DATABASE_URL)}
+# cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
+cloudinary.config(cloud_name='dqtxp6kux', api_key='359879935478934', api_secret='CAHvqoEz-PvxH4Gp5Q7USk3RBC4')
 
-AUTH_USER_MODEL = 'policy.User'
+
+# DATABASES = {'default': dj_database_url.config(default=DATABASE_URL)}
+# DATABASES['default'] =  dj_database_url.config()
+
+AUTHENTICATION_BACKENDS = (
+    ('django.contrib.auth.backends.ModelBackend'),
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+       
+    ]
+}
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Auth Token eg [Bearer <JWT> ]": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        }
+    }
+}
+
