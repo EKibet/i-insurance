@@ -106,7 +106,6 @@ else:
    }
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
-# Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -152,6 +151,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
+# cloudinary.config(cloud_name='dqtxp6kux', api_key='359879935478934', api_secret='CAHvqoEz-PvxH4Gp5Q7USk3RBC4')
 
 # only refers to the location where your static files should end up after running manage.py collectstatic. you shouldn't really need collectstatic) when developing locally
 STATIC_ROOT = 'staticfiles'
