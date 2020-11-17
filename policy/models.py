@@ -13,13 +13,10 @@ from django.db.models.signals import post_save
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import PermissionsMixin
 
-
-
-
 # accounts.models.py
 class UserManager(BaseUserManager):
 
-    def create_user(self,email, password=None):
+    def create_user(self,first_name,middle_name,last_name, email, password=None):
 
         """
         Creates and saves a User with the given email and password.
@@ -69,10 +66,36 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active  =models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
-
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+    objects = UserManager() 
+    def get_full_name(self):
+        return self.email
+    def get_short_name(self):
+        return self.email
+    def save(self, *args, **kwargs):
+        super(User, self).save(*args, **kwargs)
+        return self
+    def __repr__(self):
+        return self.first_name
+    def has_perm(self, app_label):
+        "Does the user have permission to view the app 'app_label'?"
+        return True
+    @property
+    def is_admin(self):
+        "Is the user a admin member?"
+        return self.admin
+    @property
+    def is_agent(self):
+        "Is the user active?"
+        return self.agent
+class CommonUserFieldMixin(models.Model):
+    phone_no = models.CharField(max_length=20,blank=True)
+    address = models.CharField(max_length=100,blank=True)
+    id_no = models.IntegerField(default=0)
 
+  
     objects = UserManager()
 
     def get_full_name(self):
@@ -101,7 +124,6 @@ class CommonUserFieldMixin(models.Model):
     id_no = models.IntegerField(default=0)
 
 
-
 class Policy(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     category = models.ForeignKey("Category", related_name='policy',on_delete=models.CASCADE)
@@ -112,22 +134,19 @@ class Policy(models.Model):
     slug = models.SlugField(max_length=200, db_index=True)
     signed = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return self.policy_number
-
     def post_product(self):
         self.save()
-
     def delete_product(self):
         self.delete()
     class Meta:
         ordering = ('-signed',)
         index_together = (('id', 'slug'),)
-        
+
     def __str__(self):
         return self.policy_number
-
     def get_absolute_url(self):
         return reverse("policy", kwargs={
             "pk" : self.pk
@@ -161,7 +180,6 @@ class UserProfile(CommonUserFieldMixin):
 
     def __str__(self):
         return self.gender
-
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
         if created:
@@ -180,7 +198,6 @@ class AgentProfile(CommonUserFieldMixin):
     job_number = models.CharField(max_length=20, null=True)
     GENDER_CHOICES = (('M', 'Male'), ('F', 'Female'), ('U', 'Unisex/Parody'))
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
-
     def __str__(self):
         return str(self.job_number)
 
@@ -188,7 +205,6 @@ class AgentProfile(CommonUserFieldMixin):
     def create_user_profile(sender, instance, created, **kwargs):
         if created:
             AgentProfile.objects.create(user=instance)
-
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
             instance.agentprofile.save()
@@ -200,9 +216,7 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
-
     def __str__(self):
         return self.name
-
     def get_absolute_url(self):
         return reverse('policy_list_by_category', args=[self.slug])

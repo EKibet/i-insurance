@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'policy',
     'tinymce',
     'cloudinary',
+    'authentication',
+    'knox',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,6 +73,7 @@ DATABASES = {
         # 'HOST': os.getenv('DB_HOST'),
     #    'PORT': '',
     }
+
 }
 # production
 # else:
@@ -79,6 +82,7 @@ DATABASES = {
 #            default=os.getenv('DATABASE_URL')
 #        )
 #    }
+
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 # Password validation
@@ -107,6 +111,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_URL = '/static/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+}
+
+
+cloudinary.config( 
+  cloud_name = "oduolmoringa", 
+  api_key = "447468715252465", 
+  api_secret = "VSquGjV4IRTcJID7brmZlvBG4nY" 
+)
 # only refers to the location where your static files should end up after running manage.py collectstatic. you shouldn't really need collectstatic) when developing locally
 STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = (

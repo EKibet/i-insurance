@@ -1,15 +1,27 @@
 from rest_framework import serializers
-from .models import User
+from .models import User,UserProfile
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str,force_str,smart_bytes,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 
+# Register Serializer
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'first_name' ,'middle_name','last_name','email', 'password',)
+
+    def create(self, validated_data):
+        user = UserProfile.objects.create_user(validated_data['email'],validated_data['first_name'],validated_data['middle_name'],validated_data['last_name'], validated_data['password'])
+
+        return user
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", "middle_name","last_name","id_no","email","bio","is_admin","is_agent","date_joined","phone_no","address","pk")
+        extra_kwargs = {'password': {'write_only': True}}
+
 
 
 class RequestPasswordResetSerializer(serializers.ModelSerializer):
@@ -46,5 +58,4 @@ class SetNEwPasswordSerializer(serializers.Serializer):
         except Exception as e:
             raise AuthenticationFailed("The restlink is invalid ",401)
         return super().validate(attrs)
-
 
