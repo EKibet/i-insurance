@@ -78,7 +78,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     def get_full_name(self):
         return self.email
     def get_short_name(self):
-        return self.email
+        return self.emailsh
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         return self
@@ -156,7 +156,6 @@ class UserProfile(CommonUserFieldMixin):
     EMPLOYMENT_CHOICES = (('E', 'Employed'), ('U', 'Unemployed'), ('S', 'Self-employed'))
     employment_status =models.CharField(max_length=1 ,choices=EMPLOYMENT_CHOICES)
     policy = models.ForeignKey(Policy, on_delete=models.SET_NULL, null=True, related_name='userprofile', blank=True)
-    # policy = models.ForeignKey(Policy, on_delete=models.SET_NULL, null=True, related_name='userprofile', blank=True)
     bank_accountno = models.IntegerField(default=0)
 
     def __str__(self):

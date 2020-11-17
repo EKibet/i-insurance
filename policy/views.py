@@ -3,8 +3,11 @@ from rest_framework import generics
 from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework import status
-from .models import User
-from .serializers import UserSerializer,RequestPasswordResetSerializer,SetNEwPasswordSerializer
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated  
+from rest_framework import viewsets
+from .models import User,UserProfile
+from .serializers import UserSerializer,RequestPasswordResetSerializer,SetNEwPasswordSerializer,UserProfileSerializer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str,force_str,smart_bytes,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
