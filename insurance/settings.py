@@ -10,45 +10,30 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
 import os
-import django_heroku
-from dotenv import load_dotenv
-import environ
-from decouple import config
-import dj_database_url
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-load_dotenv()
+from pathlib import Path
+import django
 
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
+import dj_database_url
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY','h9er9u4t9q3uq4')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOST')
-
-
-AUTH_USER_MODEL = 'policy.User'
-
-REST_FRSMEWORK={
-     'NON_FIELDS_ERRORS_KEY':'error',
-     'DEFAULT_AUTHENTIFICATION_CLASSES':(
-        'rest_framework_simplejwt.policy.JWTAuthentification',
-    )
-}
-
-DEBUG=True
-# Application definition
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -62,10 +47,8 @@ INSTALLED_APPS = [
     'tinymce',
     'cloudinary',
     'rest_framework.authtoken',
-    'drf_yasg',
     'corsheaders',
-   
-
+    'drf_yasg'
 
 ]
 
@@ -83,6 +66,7 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS=True
 ROOT_URLCONF = 'insurance.urls'
+AUTH_USER_MODEL = 'policy.User'
 
 TEMPLATES = [
     {
@@ -105,24 +89,25 @@ WSGI_APPLICATION = 'insurance.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'beinsurance',
-        'USER': 'Bryon',
-        'PASSWORD': 'nayere',
-        # 'HOST': os.getenv('DB_HOST'),
-    #    'PORT': '',
+if os.getenv('MODE')=="dev":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': '',
+        }
+        
     }
-}
 # production
-# else:
-#    DATABASES = {
-#        'default': dj_database_url.config(
-#            default=os.getenv('DATABASE_URL')
-#        )
-#    }
+else:
+   DATABASES = {
+       'default': dj_database_url.config(
+           default=os.getenv('DATABASE_URL')
+       )
+   }
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -162,34 +147,24 @@ USE_L10N = True
 USE_TZ = True
 
 
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
-JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
 cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
+# cloudinary.config(cloud_name='dqtxp6kux', api_key='359879935478934', api_secret='CAHvqoEz-PvxH4Gp5Q7USk3RBC4')
+
+# only refers to the location where your static files should end up after running manage.py collectstatic. you shouldn't really need collectstatic) when developing locally
+STATIC_ROOT = 'staticfiles'
 
 
-AUTHENTICATION_BACKENDS = (
-    ('django.contrib.auth.backends.ModelBackend'),
-)
+STATICFILES_DIRS = (    
+    os.path.join(BASE_DIR, '../static'),)
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-       
-    ]
-}
 
-SWAGGER_SETTINGS = {
-    "SECURITY_DEFINITIONS": {
-        "Auth Token eg [Bearer <JWT> ]": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header",
-        }
-    }
-}
 

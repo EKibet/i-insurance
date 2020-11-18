@@ -1,46 +1,65 @@
-from django.shortcuts import render
-from rest_framework import generics, status, views
-from .serializers import LoginSerializer, EmailVerificationSerializer,RegisterSerializer
-from rest_framework.response import Response
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
-from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User
-from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
-import jwt
-from rest_framework.decorators import api_view, parser_classes
-from django.conf import settings
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from rest_framework.parsers import FormParser
-from django.contrib.auth import authenticate
-from django.contrib import auth
-from django.core.exceptions import PermissionDenied
-from django.contrib import auth
-from django.contrib.auth import get_user_model as user_model
 import json
+
+import jwt
+from django.conf import settings
+from django.contrib import auth
+from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model as user_model
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils.encoding import (DjangoUnicodeDecodeError, force_str,
+                                   smart_bytes, smart_str)
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import generics, mixins, status, views
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import FormParser
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
-# User = settings.AUTH_USER_MODEL
-# User = user_model()
-# Create your views here.
-class RegisterView(generics.GenericAPIView):
+from .models import User
+from .serializers import (EmailVerificationSerializer, LoginSerializer,
+                          RegisterSerializer, RequestPasswordResetSerializer,
+                          SetNEwPasswordSerializer, UserSerializer)
+from .utils import Util
 
+
+class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
-    
-
-    def post(self, request):
-
-        user = request.data
-        serializer = self.serializer_class(data=user)
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         serializer.save()
 
         user_data = serializer.data
-
+        user = User.objects.get(email=user_data['email'])
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+class RequestPasswordReset(generics.GenericAPIView):
+    serializer_class = RequestPasswordResetSerializer
+
+    def post(self, request):
+        email = request.data['email']
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            u_id64=urlsafe_base64_encode(str(user.id).encode('utf-8'))
+            u_id64 = u_id64
+            token = PasswordResetTokenGenerator().make_token(user)
+            current_site = get_current_site(request=request).domain
+            relativeLink = reverse('policy:password_reset',kwargs={'u_id64':u_id64,'token':token})
+            absurl = 'http://'+current_site+relativeLink
+            email_body = 'Hello  Use link below to reset password \n'+absurl
+            data = {'email_body':email_body,'to_email':user.email,'email_subject':'Password Reset'}
+            Util.send_email(data)
+        return Response({'success':'We have sent you a link to reset your password'},status=status.HTTP_200_OK)
 
 
 class LoginAPIView(generics.GenericAPIView):
@@ -68,10 +87,6 @@ class LoginAPIView(generics.GenericAPIView):
 
         return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # serializer = self.serializer_class(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-
-        # return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class VerifyEmail(views.APIView):
