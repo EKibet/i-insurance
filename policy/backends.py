@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 
 class JWTAuthentification(authentication.BaseAuthentication):
 
-    def authenticate(self, request)
+    def authenticate(self, request):
     auth_data = authentication.get_authorization_header(request)
 
     if not auth_data:

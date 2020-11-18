@@ -70,10 +70,7 @@ class LoginAPIView(generics.GenericAPIView):
 
         return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # serializer = self.serializer_class(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-
-        # return Response(serializer.data, status=status.HTTP_200_OK)
+        
 
 
 class VerifyEmail(views.APIView):
@@ -83,7 +80,7 @@ class VerifyEmail(views.APIView):
     token_param_config = openapi.Parameter(
     
         'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING, required=True)
-    # token = openapi.Parameter('token', openapi.IN_FORM, type=openapi.TYPE_STRING, required=True)
+    
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
