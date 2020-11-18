@@ -20,6 +20,6 @@ set_env_vars:
 	@[ -f .env ] && source .env
 
 serve:
-	python3.6 manage.py runserver
+	python3.8 manage.py runserver
 
 .PHONY: set_env_vars

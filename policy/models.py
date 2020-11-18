@@ -72,13 +72,13 @@ class User(AbstractBaseUser,PermissionsMixin):
     last_name = models.CharField(max_length=50)
     email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
     bio = models.TextField(max_length=500, blank=True, null=True)
-    is_admin = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active  =models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username','first_name','middle_name','last_name']
+    REQUIRED_FIELDS = ['username']
     objects = UserManager() 
 
     def get_full_name(self):

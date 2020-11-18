@@ -31,6 +31,7 @@ from .utils import Util
 
 
 class RegisterAPI(generics.GenericAPIView):
+    
     serializer_class = RegisterSerializer
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
