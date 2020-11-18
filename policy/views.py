@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status, views
 from .serializers import LoginSerializer, EmailVerificationSerializer,RegisterSerializer
+from .serializers import AgentProfileSerializer
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
@@ -20,8 +21,9 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import auth
 from django.contrib.auth import get_user_model as user_model
 import json
+from rest_framework import permissions
 from django.http import JsonResponse
-
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 # User = settings.AUTH_USER_MODEL
 # User = user_model()
 # Create your views here.
@@ -99,3 +101,24 @@ class VerifyEmail(views.APIView):
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AgentProfileList(ListAPIView):
+
+    serializer_class = AgentProfileSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return AgentProfile.objects.all()
+
+
+class AgentProfileDetailApi(RetrieveUpdateDestroyAPIView):
+    serializer_class = AgentProfileSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return AgentProfile.objects.filter(user=self.request.user)
+
+
+
