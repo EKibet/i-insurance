@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model as user_model
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
@@ -37,6 +36,9 @@ class RegisterAPI(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        user_data = serializer.data
+        user = User.objects.get(email=user_data['email'])
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -58,23 +60,6 @@ class RequestPasswordReset(generics.GenericAPIView):
             data = {'email_body':email_body,'to_email':user.email,'email_subject':'Password Reset'}
             Util.send_email(data)
         return Response({'success':'We have sent you a link to reset your password'},status=status.HTTP_200_OK)
-
-class RegisterView(generics.GenericAPIView):
-
-    serializer_class = RegisterSerializer
-    
-
-    def post(self, request):
-
-        user = request.data
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-
-        serializer.save()
-
-        user_data = serializer.data
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class LoginAPIView(generics.GenericAPIView):

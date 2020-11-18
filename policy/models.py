@@ -26,6 +26,9 @@ class UserManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
         )
+        user.first_name=first_name
+        user.middle_name=middle_name
+        user.last_name=last_name
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -37,6 +40,9 @@ class UserManager(BaseUserManager):
             email,
             password=password,
         )
+        user.first_name = first_name
+        user.middle_name = middle_name
+        user.last_name = last_name
         user.agent = True
         user.save(using=self._db)
         return user
@@ -61,9 +67,9 @@ class CommonUserFieldMixin(models.Model):
     id_no = models.IntegerField(default=0)
 
 class User(AbstractBaseUser,PermissionsMixin):
-    first_name = models.CharField(max_length=50, blank=True)
+    first_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, blank=True)
+    last_name = models.CharField(max_length=50)
     email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
     bio = models.TextField(max_length=500, blank=True, null=True)
     is_admin = models.BooleanField(default=True)
@@ -72,7 +78,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username','first_name','middle_name','last_name']
     objects = UserManager() 
 
     def get_full_name(self):

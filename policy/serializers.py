@@ -1,31 +1,43 @@
-<<<<<<< HEAD
 from django.conf import settings
-# from django.contrib.auth import authenticate
-=======
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
->>>>>>> removecomments
 from django.contrib import auth
+from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model as user_model
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import (DjangoUnicodeDecodeError, force_str,
                                    smart_bytes, smart_str)
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+# from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 
 from .models import *
-from .models import User, UserProfile
 
 
-User = user_model()
-# Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        max_length=68, min_length=6, write_only=True)
+
     class Meta:
         model = User
         fields = ('id', 'first_name' ,'middle_name','last_name','email', 'password',)
+
+
+    default_error_messages = {
+        
+    }
+
+
+    def validate(self, attrs):
+        email = attrs.get('email', '')
+        first_name = attrs.get('first_name', '')
+        middle_name = attrs.get('middle_name', '')
+        last_name = attrs.get('last_name', '')
+        if first_name=='' or last_name=='':
+            raise serializers.ValidationError(
+                self.default_error_messages)
+        return attrs
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

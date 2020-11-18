@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from . models import Category, Policy, UserManager, User, UserProfile, AdminProfile, AgentProfile
-from rest_framework.authtoken.admin import TokenAdmin
 
 # register your models here
 admin.site.register(AgentProfile)
@@ -10,6 +9,5 @@ admin.site.register(UserProfile)
 admin.site.register(Policy)
 admin.site.register(Category)
 admin.site.register(User)
-TokenAdmin.raw_id_fields = ['user']
 
 

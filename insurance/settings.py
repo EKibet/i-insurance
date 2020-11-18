@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'policy',
     'tinymce',
     'cloudinary',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'drf_yasg'
+
 ]
 
 MIDDLEWARE = [
@@ -123,11 +127,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REST_FRAMEWORK={
-    'DEFAULT_AUTHENTICATION_CLASSES':(
-        'policy.backends.JWTAuthentication',
-    )
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -159,10 +158,8 @@ STATIC_ROOT = 'staticfiles'
 
 
 STATICFILES_DIRS = (    
-    os.path.join(BASE_DIR, '../static'),
-AUTHENTICATION_BACKENDS = (
-    ('django.contrib.auth.backends.ModelBackend'),
-)
+    os.path.join(BASE_DIR, '../static'),)
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 
 
