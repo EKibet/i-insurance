@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.dispatch import receiver
 from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
+    BaseUserManager, AbstractBaseUser,UserManager
 )
 from django.db.models.signals import post_save
 from django.utils.translation import gettext as _
@@ -26,6 +26,9 @@ class UserManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
         )
+        user.first_name=first_name
+        user.middle_name=middle_name
+        user.last_name=last_name
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -37,6 +40,9 @@ class UserManager(BaseUserManager):
             email,
             password=password,
         )
+        user.first_name = first_name
+        user.middle_name = middle_name
+        user.last_name = last_name
         user.agent = True
         user.save(using=self._db)
         return user
@@ -55,11 +61,15 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class CommonUserFieldMixin(models.Model):
+    phone_no = models.CharField(max_length=20,blank=True)
+    address = models.CharField(max_length=100,blank=True)
+    id_no = models.IntegerField(default=0)
 
 class User(AbstractBaseUser,PermissionsMixin):
-    first_name = models.CharField(max_length=50, blank=True)
+    first_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, blank=True)
+    last_name = models.CharField(max_length=50)
     email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
     bio = models.TextField(max_length=500, blank=True, null=True)
     is_admin = models.BooleanField(default=True)
@@ -68,7 +78,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username','first_name','middle_name','last_name']
     objects = UserManager() 
 
     def get_full_name(self):
@@ -149,8 +159,8 @@ class UserProfile(CommonUserFieldMixin):
     EMPLOYMENT_CHOICES = (('E', 'Employed'), ('U', 'Unemployed'), ('S', 'Self-employed'))
     employment_status =models.CharField(max_length=1 ,choices=EMPLOYMENT_CHOICES)
     policy = models.ForeignKey(Policy, on_delete=models.SET_NULL, null=True, related_name='userprofile', blank=True)
-    # policy = models.ForeignKey(Policy, on_delete=models.SET_NULL, null=True, related_name='userprofile', blank=True)
     bank_accountno = models.IntegerField(default=0)
+
 
     def __str__(self):
         return self.gender
@@ -177,11 +187,26 @@ class AgentProfile(CommonUserFieldMixin):
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
+
+        return self.job_number
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
         if created:
             AgentProfile.objects.create(user=instance)
+            
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
             instance.agentprofile.save()
+
+
+class AdminProfile(CommonUserFieldMixin):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    cv = CloudinaryField('image')
+    profile_picture = CloudinaryField('image')
+    def __str__(self):
+        return self.remarks
 
 
 class Category(models.Model):

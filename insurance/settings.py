@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'policy',
     'tinymce',
     'cloudinary',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'drf_yasg'
+
 ]
 
 MIDDLEWARE = [
@@ -56,8 +60,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS=True
 ROOT_URLCONF = 'insurance.urls'
 AUTH_USER_MODEL = 'policy.User'
 
@@ -101,10 +108,8 @@ else:
            default=os.getenv('DATABASE_URL')
        )
    }
-
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
-# Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -122,6 +127,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'policy.backends.JWTAuthentication',
+    )
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -145,14 +155,16 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
+# cloudinary.config(cloud_name='dqtxp6kux', api_key='359879935478934', api_secret='CAHvqoEz-PvxH4Gp5Q7USk3RBC4')
 
 # only refers to the location where your static files should end up after running manage.py collectstatic. you shouldn't really need collectstatic) when developing locally
 STATIC_ROOT = 'staticfiles'
 
 
 STATICFILES_DIRS = (    
-    os.path.join(BASE_DIR, '../static'),
-)
+    os.path.join(BASE_DIR, '../static'),)
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 
 
