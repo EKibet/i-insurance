@@ -12,7 +12,10 @@ django-tinymce==3.1.0
 django-tinymce4-lite==1.8.0
 djangorestframework==3.12.2
 djangorestframework-jsonapi==4.0.0
+djangorestframework-simplejwt==4.4.0
+drf-yasg==1.20.0
 gunicorn==20.0.4
+jwt==1.1.0
 psycopg2==2.8.6
 python-decouple==3.3
 requests==2.25.0
@@ -22,3 +25,4 @@ sqlparse==0.4.1
 urllib3==1.26.1
 whitenoise==5.2.0
 python-dotenv==0.15.0
+django-cors-headers==3.5.0
