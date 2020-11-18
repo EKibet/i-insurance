@@ -11,7 +11,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("first_name", "middle_name","last_name","id_no","email","bio","is_admin","is_agent","date_joined","phone_no","address","pk")
 
-
+class UserProfileSerializer(serializers.ModelSerializer):
+    policy_name = serializers.RelatedField(source='policy', queryset=Policy.objects.all())
+    class Meta:
+        model = UserProfile
+        fields = ("id_img", "profile_picture","date_joined","gender","employment_status","bank_accountno","policy","pk")
 
 class RequestPasswordResetSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(required=True)

@@ -57,3 +57,40 @@ class SetNEwPasswordAPIView(generics.GenericAPIView):
 
         serializer.is_valid(raise_exception=True)
         return Response({'Success':True, 'messsage':'Password reset success'},status=status.HTTP_200_OK)
+
+
+
+class UserProfileViewset(viewsets.GenericViewSet,mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+  queryset = UserProfile.objects.all() 
+  serializer_class = UserProfile Serializer
+
+
+class ListUserProfileView(generics.GenericAPIView, 
+                       mixins.ListModelMixin, 
+                       mixins.CreateModelMixin, 
+                       mixins.UpdateModelMixin, 
+                       mixins.RetrieveModelMixin, 
+                       mixins.DestroyModelMixin):
+  """
+  Provides a get post put delete method handler.
+  """
+  queryset = UserProfile.objects.all() 
+  serializer_class = UserProfileSerializer
+  lookup_field ='pk'
+  # authentication_classes = [TokenAuthentication]
+  # permission_classes = [IsAuthenticated]
+  
+  def get(self,request,pk=None):
+    if pk:
+      return self.retrieve(request)
+    else:
+      return self.list(request)
+  
+  def post(self,request):
+    return self.create(request)
+  
+  def put(self,request,pk=None):
+    return self.update(request,pk)
+  
+  def delete(self,request,pk):
+    return self.destroy(request,pk)
