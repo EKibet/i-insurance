@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from .serializers import RegisterSerializer,UserSerializer
+from django.contrib.auth import authenticate
+from knox.models import AuthToken
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework.response import Response
@@ -7,13 +10,32 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated  
 from rest_framework import viewsets
 from .models import User,UserProfile
-from .serializers import UserSerializer,RequestPasswordResetSerializer,SetNEwPasswordSerializer,UserProfileSerializer
+from .serializers import UserSerializer,RequestPasswordResetSerializer,SetNEwPasswordSerializer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str,force_str,smart_bytes,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util
+
+class RegisterAPI(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # import pdb; pdb.set_trace()
+        user = User.objects.create_user(
+            first_name=request.POST['first_name'],
+            middle_name=request.POST['middle_name'],
+            last_name=request.POST['last_name'],
+            email=request.POST['email'],
+            password=request.POST['password']
+        )
+        # import pdb; pdb.set_trace()
+        return Response({
+        "user": UserSerializer(user, context=self.get_serializer_context()).data,
+      
+        })
 
 
 class RequestPasswordReset(generics.GenericAPIView):
