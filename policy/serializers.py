@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from policy.models import User
-from .models import UserProfile
+from .models import UserProfile,Policy
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
@@ -19,3 +19,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = UserProfile.objects.create_user(validated_data['email'],validated_data['first_name'],validated_data['middle_name'],validated_data['last_name'], validated_data['password'])
 
         return user
+
+
+
+class PolicySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Policy
+        fields =( 'user', 'category', 'policy_number', 'policy_contact', 'form', 'slug', 'signedupdated')
+
+
+
+

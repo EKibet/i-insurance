@@ -95,6 +95,7 @@ class CommonUserFieldMixin(models.Model):
     phone_no = models.CharField(max_length=20,blank=True)
     address = models.CharField(max_length=100,blank=True)
     id_no = models.IntegerField(default=0)
+     
 
 
 
@@ -103,7 +104,6 @@ class Policy(models.Model):
     category = models.ForeignKey("Category", related_name='policy',on_delete=models.CASCADE)
     policy_number = models.CharField(max_length=20)
     policy_contact = models.CharField(max_length=30)
-    category  = models.CharField(max_length=30)
     form = models.TextField(max_length=300)
     slug = models.SlugField(max_length=200, db_index=True)
     signed = models.DateTimeField(auto_now_add=True)

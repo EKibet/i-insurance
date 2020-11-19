@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics,status
 from .serializers import RegisterSerializer,UserSerializer
-from rest_framework.response import Response
+from rest_framework.response import Response,APIView
 from django.contrib.auth import authenticate
 from knox.models import AuthToken
 from policy.models import User
@@ -24,3 +24,10 @@ class RegisterAPI(generics.GenericAPIView):
         "user": UserSerializer(user, context=self.get_serializer_context()).data,
       
         })
+
+
+
+
+class policyList(APIView):
+    def get(self,request, formart = None):
+        all_policy = Policy.object
