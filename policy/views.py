@@ -71,15 +71,15 @@ class UserProfileAPIView(APIView):
         serializer = UserProfileSerializer(userprofiles, many=True)
         return Response(serializer.data)
     
-    def post(self,request):
+    # def post(self,request):
       
-        serializer = UserProfileSerializer(data=request.data)
+    #     serializer = UserProfileSerializer(data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class SingleUserProfileAPIView(APIView):
     def get_object(self,pk):
@@ -107,4 +107,5 @@ class SingleUserProfileAPIView(APIView):
         profile = self.get_object(pk)
         profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
