@@ -1,14 +1,13 @@
 from django.shortcuts import render
 from rest_framework import generics
-from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated  
-from rest_framework import viewsets
+from rest_framework import viewsets,permissions
 from rest_framework.views import  APIView
 from .models import User,UserProfile
-from .serializers import UserSerializer,RequestPasswordResetSerializer,SetNEwPasswordSerializer,UserProfileSerializer
+from .serializers import UserSerializer,RequestPasswordResetSerializer,SetNEwPasswordSerializer,UserProfileSerializer,LogoutSerislizer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str,force_str,smart_bytes,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
@@ -109,3 +108,14 @@ class SingleUserProfileAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class LogoutAPIView(generics.GenericAPIView):
+
+    serializer_class = LogoutSerislizer
+    permission_classes = (permissions.IsAuthenticated)
+
+    def  post(self,request):
+        serializer = serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import PasswordTokenCheckAPI,RequestPasswordReset,SetNEwPasswordAPIView,UserProfileAPIView,SingleUserProfileAPIView
+from .views import PasswordTokenCheckAPI,RequestPasswordReset,SetNEwPasswordAPIView,UserProfileAPIView,SingleUserProfileAPIView,LogoutAPIView
 
 app_name='policy'
 urlpatterns=[
@@ -8,6 +8,6 @@ urlpatterns=[
     path('password-reset/<u_id64>/<token>/',PasswordTokenCheckAPI.as_view(),name='password_reset'),
     path('pasword-reset-complete/',SetNEwPasswordAPIView.as_view(),name='password_reset_complete'),
     path('userprofile/',UserProfileAPIView.as_view(),name='user_profile'),
-    path('single-profile/<int:pk>',SingleUserProfileAPIView.as_view(),name='single_profile')
-
+    path('single-profile/<int:pk>',SingleUserProfileAPIView.as_view(),name='single_profile'),
+    path('logout/',LogoutAPIView.as_view(),name='logout')
 ]
