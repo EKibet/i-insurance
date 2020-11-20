@@ -1,10 +1,15 @@
 from django.shortcuts import render
 from rest_framework import generics,status
 from .serializers import RegisterSerializer,UserSerializer
-from rest_framework.response import Response,APIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from knox.models import AuthToken
 from policy.models import User
+from .models import Policy
+from .serializers import PolicySerializer
+from rest_framework import status
+
 
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -27,7 +32,16 @@ class RegisterAPI(generics.GenericAPIView):
 
 
 
-
 class policyList(APIView):
     def get(self,request, formart = None):
-        all_policy = Policy.object
+       all_policy = Policy.objects.all()
+       serializers = PolicySerializer(all_policy, many = True)
+       return Response(serializers.data)
+
+
+    def post(self, request, formart=None):
+        serializers = PolicySerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializers.data, status = status.HTTP_201_CREATED)
+        return Response(serializers.errors, status = status.HTTP_400_BAD_REQUEST)
