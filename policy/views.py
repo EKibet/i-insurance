@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,permissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated  
 from rest_framework import viewsets
@@ -64,7 +64,7 @@ class UserProfileAPIView(APIView):
     """
     Provides a get post put delete method handler.
     """
-    
+    permission_classes = [permissions.IsAuthenticated]
     def get(self,request):
 
         userprofiles = UserProfile.objects.all()
@@ -82,6 +82,8 @@ class UserProfileAPIView(APIView):
     #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class SingleUserProfileAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def get_object(self,pk):
         try:
             return UserProfile.objects.get(pk=pk)
