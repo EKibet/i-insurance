@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
+from .models import AgentProfile
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import jwt
@@ -85,8 +86,10 @@ class VerifyEmail(views.APIView):
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
+        
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY)
+            payload = jwt.decode(token, 'rrffgguyuioommbf456788')
+            # payload = jwt.decode(token, settings.SECRET_KEY)
             user = User.objects.get(id=payload['user_id'])
             if not user.is_verified:
                 user.is_verified = True
@@ -102,14 +105,16 @@ class VerifyEmail(views.APIView):
 
 class AgentProfileList(ListAPIView):
 
+
     serializer_class = AgentProfileSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return AgentProfile.objects.all()
 
 
 class AgentProfileDetailApi(RetrieveUpdateDestroyAPIView):
+    
     serializer_class = AgentProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
     lookup_field = "id"
@@ -119,3 +124,4 @@ class AgentProfileDetailApi(RetrieveUpdateDestroyAPIView):
 
 
 
+# 

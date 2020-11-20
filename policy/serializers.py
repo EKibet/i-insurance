@@ -88,3 +88,8 @@ class AgentProfileSerializer(serializers.ModelSerializer):
             'gender',
             
         ]
+
+
+# queryset = Employee.objects.all()
+#     serializer_class = EmployeeSerializer
+#     filter_fields = ('name', 'email', 'department')

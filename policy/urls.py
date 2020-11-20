@@ -7,6 +7,8 @@ from rest_framework.authtoken import views
 from django.conf.urls import url
 # from rest_framework.authtoken.views import obtain_jwt_token
 
+
+
 urlpatterns = [
 
         path('register/', RegisterView.as_view(), name="register"),
