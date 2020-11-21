@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'tinymce',
     'cloudinary',
     'authentication',
-    # 'rest_framework.authtokenknox'
+    # 'rest_framework.authtoken'
     'knox',
 
 

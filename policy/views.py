@@ -45,3 +45,38 @@ class policyList(APIView):
             serializer.save()
             return Response(serializers.data, status = status.HTTP_201_CREATED)
         return Response(serializers.errors, status = status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class PolicyDescription(APIView):
+    def get_Policy(self,pk):
+        try:
+            return Policy.objects.get(pk=pk)
+        except Policy.DoesNotExist:
+            return Http404
+
+
+    def get(self,request,pk,formart=None):
+        policy = self.get_policy(pk)
+        serializer = PolicySerializer(policy)
+        return Response(serializer.data)
+
+
+    
+    def put(self, request,pk, formart= None):
+        policy = self.get_policy(pk)
+        serializer = PolicySerializer(policy, request.data)
+        if serializers.is_valid():
+
+            return Response(serializers.data)
+        else:
+            return Response(serializers.errors, status= status.HTTP_400_BAD_REQUEST)
+
+
+    
+
+    def delete(self, request,pk ,formart = None):
+        policy = self.get_policy(pk)
+        policy.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

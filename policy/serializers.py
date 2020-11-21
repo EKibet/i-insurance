@@ -25,8 +25,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 class PolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = Policy
-        fields =( 'user', 'category', 'policy_number', 'policy_contact', 'form', 'slug', 'signedupdated')
-
-
+        fields =( 'id', 'user', 'category', 'policy_number', 'policy_contact', 'form', 'slug', 'signed', 'updated')
 
 
