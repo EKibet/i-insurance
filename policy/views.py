@@ -5,6 +5,12 @@ from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model as user_model
+from rest_framework import permissions
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated  
+from rest_framework import viewsets
+from rest_framework.views import  APIView
+from .models import User,UserProfile
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
@@ -23,10 +29,9 @@ from rest_framework.parsers import FormParser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import User
 from .serializers import (EmailVerificationSerializer, LoginSerializer,
                           RegisterSerializer, RequestPasswordResetSerializer,
-                          SetNEwPasswordSerializer, UserSerializer)
+                          SetNEwPasswordSerializer, UserSerializer,UserProfileSerializer)
 from .utils import Util
 
 
@@ -115,3 +120,63 @@ class VerifyEmail(views.APIView):
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+class SetNEwPasswordAPIView(generics.GenericAPIView):
+    serializer_class = SetNEwPasswordSerializer
+
+    def patch(self,requeest):
+        serializer=self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'Success':True, 'messsage':'Password reset success'},status=status.HTTP_200_OK)
+
+class UserProfileAPIView(APIView):
+
+    """
+    Provides a get post put delete method handler.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self,request):
+
+        userprofiles = UserProfile.objects.all()
+        serializer = UserProfileSerializer(userprofiles, many=True)
+        return Response(serializer.data)
+    
+    # def post(self,request):
+      
+    #     serializer = UserProfileSerializer(data=request.data)
+
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
+
+    #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class SingleUserProfileAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self,pk):
+        try:
+            return UserProfile.objects.get(pk=pk)
+        except UserProfile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self,request,pk):
+        profile = self.get_object(pk)
+        serializer = UserProfileSerializer(pk)
+        return Response(serializer.data)
+
+    def put(self,request,pk):
+        profile = self.get_object(pk)
+        serializer = UserProfileSerializer(profile, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self,request,pk):
+        profile = self.get_object(pk)
+        profile.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

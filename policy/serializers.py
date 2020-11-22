@@ -8,6 +8,8 @@ from django.utils.encoding import (DjangoUnicodeDecodeError, force_str,
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 # from django.contrib.auth import authenticate
 from rest_framework import serializers
+
+from .models import User,UserProfile,Policy
 from rest_framework.exceptions import AuthenticationFailed
 
 from .models import *
@@ -45,12 +47,17 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     password=serializers.CharField(max_length=68, min_length=6, write_only=True) 
-
     def validate (self, attrs):
         email= attrs.get('email', '')
         username =attrs.get('username', '')
 
         return attrs
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    policy_name = serializers.RelatedField(source='policy', queryset=Policy.objects.all())
+    class Meta:
+        model = UserProfile
+        fields = ("id_img", "profile_picture","date_joined","gender","employment_status","bank_accountno","policy_name","pk")
 
 class RequestPasswordResetSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(required=True)

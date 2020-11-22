@@ -82,9 +82,9 @@ class User(AbstractBaseUser,PermissionsMixin):
     objects = UserManager() 
 
     def get_full_name(self):
-        return self.email
+        return self.first_name +""+ middle_name
     def get_short_name(self):
-        return self.email
+        return self.first_name
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         return self
@@ -113,9 +113,7 @@ class Policy(models.Model):
     category = models.ForeignKey("Category", related_name='policy',on_delete=models.CASCADE)
     policy_number = models.CharField(max_length=20)
     policy_contact = models.CharField(max_length=30)
-    category  = models.CharField(max_length=30)
     form = models.TextField(max_length=300)
-    slug = models.SlugField(max_length=200, db_index=True)
     signed = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -128,6 +126,9 @@ class Policy(models.Model):
     class Meta:
         ordering = ('-signed',)
         index_together = (('id', 'slug'),)
+
+
+        
 
     def __str__(self):
         return self.policy_number
