@@ -1,1 +1,1 @@
-web: gunicorn awwards.wsgi --log-file -
+web: gunicorn insurance.wsgi --log-file -

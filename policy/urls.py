@@ -1,8 +1,9 @@
 from django.urls import path
 from .views import RegisterView,LoginAPIView,VerifyEmail,ListAPIView, RetrieveUpdateDestroyAPIView, AgentProfileList, AgentProfileDetailApi
 from django.conf import settings
+from django.conf.urls import url
 from django.contrib.auth import views
-from . import views
+from django.urls import path
 from rest_framework.authtoken import views
 from django.conf.urls import url
 # from rest_framework.authtoken.views import obtain_jwt_token

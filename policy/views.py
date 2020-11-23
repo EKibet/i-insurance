@@ -11,15 +11,9 @@ from .models import AgentProfile
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import jwt
-from rest_framework.decorators import api_view, parser_classes
 from django.conf import settings
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from rest_framework.parsers import FormParser
+from django.contrib import auth
 from django.contrib.auth import authenticate
-from django.contrib import auth
-from django.core.exceptions import PermissionDenied
-from django.contrib import auth
 from django.contrib.auth import get_user_model as user_model
 import json
 from rest_framework import permissions
@@ -34,17 +28,38 @@ class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
     
 
-    def post(self, request):
 
-        user = request.data
-        serializer = self.serializer_class(data=user)
+class RegisterAPI(generics.GenericAPIView):
+    
+    serializer_class = RegisterSerializer
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         serializer.save()
 
         user_data = serializer.data
-
+        user = User.objects.get(email=user_data['email'])
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+class RequestPasswordReset(generics.GenericAPIView):
+    serializer_class = RequestPasswordResetSerializer
+
+    def post(self, request):
+        email = request.data['email']
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            u_id64=urlsafe_base64_encode(str(user.id).encode('utf-8'))
+            u_id64 = u_id64
+            token = PasswordResetTokenGenerator().make_token(user)
+            current_site = get_current_site(request=request).domain
+            relativeLink = reverse('policy:password_reset',kwargs={'u_id64':u_id64,'token':token})
+            absurl = 'http://'+current_site+relativeLink
+            email_body = 'Hello  Use link below to reset password \n'+absurl
+            data = {'email_body':email_body,'to_email':user.email,'email_subject':'Password Reset'}
+            Util.send_email(data)
+        return Response({'success':'We have sent you a link to reset your password'},status=status.HTTP_200_OK)
 
 
 class LoginAPIView(generics.GenericAPIView):

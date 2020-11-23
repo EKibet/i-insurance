@@ -10,14 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
 import os
 import django_heroku
 from dotenv import load_dotenv
 from decouple import config
 import dj_database_url
 import cloudinary
-import cloudinary.uploader
 import cloudinary.api
 load_dotenv()
 from datetime import timedelta
@@ -25,12 +23,13 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY','h9er9u4t9q3uq4')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
@@ -63,14 +62,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'policy',
     'tinymce',
     'cloudinary',
     'rest_framework.authtoken',
-    'drf_yasg',
     'corsheaders',
-   
-
+    'drf_yasg'
 
 ]
 
@@ -84,10 +82,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
 ]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ALLOW_ALL_ORIGINS=True
 ROOT_URLCONF = 'insurance.urls'
+AUTH_USER_MODEL = 'policy.User'
 
 TEMPLATES = [
     {
@@ -110,7 +112,6 @@ WSGI_APPLICATION = 'insurance.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 if os.getenv('MODE')=="dev":
     DATABASES = {
         'default': {
@@ -152,6 +153,20 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+
+    'JTI_CLAIM': 'jti',
+
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -166,19 +181,26 @@ USE_L10N = True
 USE_TZ = True
 
 
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
-JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
-
-cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
-
-
-AUTHENTICATION_BACKENDS = (
-    ('django.contrib.auth.backends.ModelBackend'),
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
 )
+
+
+# cloudinary.config(cloud_name=os.getenv('cloud_name'),api_key=os.getenv('api_key'),api_secret=os.getenv('api_secret'))
+# cloudinary.config(cloud_name='dqtxp6kux', api_key='359879935478934', api_secret='CAHvqoEz-PvxH4Gp5Q7USk3RBC4')
+
+# only refers to the location where your static files should end up after running manage.py collectstatic. you shouldn't really need collectstatic) when developing locally
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
