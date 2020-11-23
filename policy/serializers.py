@@ -84,7 +84,6 @@ class AgentProfileSerializer(serializers.ModelSerializer):
             'email',
             'profile_picture',
             'job_number',
-            'bio',
             'gender',
             
         ]

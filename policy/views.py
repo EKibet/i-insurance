@@ -23,6 +23,7 @@ from django.contrib import auth
 from django.contrib.auth import get_user_model as user_model
 import json
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 # User = settings.AUTH_USER_MODEL
@@ -107,7 +108,7 @@ class AgentProfileList(ListAPIView):
 
 
     serializer_class = AgentProfileSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return AgentProfile.objects.all()
@@ -117,6 +118,7 @@ class AgentProfileDetailApi(RetrieveUpdateDestroyAPIView):
     
     serializer_class = AgentProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAdminUser,)
     lookup_field = "id"
 
     def get_queryset(self):
