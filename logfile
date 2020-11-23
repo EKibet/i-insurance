@@ -1,0 +1,6 @@
+2020-11-22 16:31:48.463 EAT [3763] FATAL:  lock file "postmaster.pid" already exists
+2020-11-22 16:31:48.463 EAT [3763] HINT:  Is another postmaster (PID 3665) running in data directory "/usr/local/var/postgres"?
+2020-11-22 16:32:15.552 EAT [3801] FATAL:  lock file "postmaster.pid" already exists
+2020-11-22 16:32:15.552 EAT [3801] HINT:  Is another postmaster (PID 3665) running in data directory "/usr/local/var/postgres"?
+2020-11-22 16:33:02.489 EAT [3871] FATAL:  lock file "postmaster.pid" already exists
+2020-11-22 16:33:02.489 EAT [3871] HINT:  Is another postmaster (PID 3832) running in data directory "/usr/local/var/postgres"?

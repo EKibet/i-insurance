@@ -1,38 +1,32 @@
-import json
-
+from django.shortcuts import render
+from rest_framework import generics, status, views
+from .serializers import LoginSerializer, EmailVerificationSerializer,RegisterSerializer
+from .serializers import AgentProfileSerializer
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import RefreshToken
+from .models import User
+from .models import AgentProfile
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 import jwt
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model as user_model
+import json
 from rest_framework import permissions
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated  
-from rest_framework import viewsets
-from rest_framework.views import  APIView
-from .models import User,UserProfile
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.urls import reverse
-from django.utils.encoding import (DjangoUnicodeDecodeError, force_str,
-                                   smart_bytes, smart_str)
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, mixins, status, views
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, parser_classes
-from rest_framework.parsers import FormParser
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+# User = settings.AUTH_USER_MODEL
+# User = user_model()
+# Create your views here.
+class RegisterView(generics.GenericAPIView):
 
-from .serializers import (EmailVerificationSerializer, LoginSerializer,
-                          RegisterSerializer, RequestPasswordResetSerializer,
-                          SetNEwPasswordSerializer, UserSerializer,UserProfileSerializer)
-from .utils import Util
+    serializer_class = RegisterSerializer
+    
 
 
 class RegisterAPI(generics.GenericAPIView):
@@ -93,6 +87,7 @@ class LoginAPIView(generics.GenericAPIView):
 
         return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+        
 
 
 class VerifyEmail(views.APIView):
@@ -102,13 +97,15 @@ class VerifyEmail(views.APIView):
     token_param_config = openapi.Parameter(
     
         'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING, required=True)
-    # token = openapi.Parameter('token', openapi.IN_FORM, type=openapi.TYPE_STRING, required=True)
+    
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
+        
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY)
+            payload = jwt.decode(token, 'rrffgguyuioommbf456788')
+            # payload = jwt.decode(token, settings.SECRET_KEY)
             user = User.objects.get(id=payload['user_id'])
             if not user.is_verified:
                 user.is_verified = True
@@ -121,62 +118,27 @@ class VerifyEmail(views.APIView):
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
-class SetNEwPasswordAPIView(generics.GenericAPIView):
-    serializer_class = SetNEwPasswordSerializer
 
-    def patch(self,requeest):
-        serializer=self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response({'Success':True, 'messsage':'Password reset success'},status=status.HTTP_200_OK)
+class AgentProfileList(ListAPIView):
 
-class UserProfileAPIView(APIView):
 
-    """
-    Provides a get post put delete method handler.
-    """
-    permission_classes = [permissions.IsAuthenticated]
-    def get(self,request):
+    serializer_class = AgentProfileSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
-        userprofiles = UserProfile.objects.all()
-        serializer = UserProfileSerializer(userprofiles, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return AgentProfile.objects.all()
+
+
+class AgentProfileDetailApi(RetrieveUpdateDestroyAPIView):
     
-    # def post(self,request):
-      
-    #     serializer = UserProfileSerializer(data=request.data)
+    serializer_class = AgentProfileSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAdminUser,)
+    lookup_field = "id"
 
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
+    def get_queryset(self):
+        return AgentProfile.objects.filter(user=self.request.user)
 
-    #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
-class SingleUserProfileAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
 
-    def get_object(self,pk):
-        try:
-            return UserProfile.objects.get(pk=pk)
-        except UserProfile.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def get(self,request,pk):
-        profile = self.get_object(pk)
-        serializer = UserProfileSerializer(pk)
-        return Response(serializer.data)
-
-    def put(self,request,pk):
-        profile = self.get_object(pk)
-        serializer = UserProfileSerializer(profile, data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self,request,pk):
-        profile = self.get_object(pk)
-        profile.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+# 

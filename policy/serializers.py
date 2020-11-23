@@ -140,3 +140,19 @@ class LoginSerializer(serializers.ModelSerializer):
             }
             return attrs
             
+
+class AgentProfileSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(source='user.email', read_only=True)
+
+    class Meta:
+        model = AgentProfile
+        fields = [
+            'pk',
+            'email',
+            'profile_picture',
+            'job_number',
+            'gender',
+            
+        ]
+
+
