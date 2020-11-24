@@ -46,6 +46,13 @@ class RegisterAPI(generics.GenericAPIView):
 
         user_data = serializer.data
         user = User.objects.get(email=user_data['email'])
+        token = RefreshToken.for_user(user).access_token
+        current_site = get_current_site(request).domain
+        relativeLink = reverse('policy:email_verify')
+        absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+        email_body = 'Hello  '+user.first_name +'Use the link below to verify your email \n'+absurl
+        data = {'email_body':email_body,'to_email':user.email,'email_subject':'Verify your email'}
+        Util.send_email(data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -122,6 +129,21 @@ class VerifyEmail(views.APIView):
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class PasswordTokenCheckAPI(generics.GenericAPIView):
+    def get(self,request,u_id64,token):
+        try:
+            id=smart_bytes(urlsafe_base64_encode(u_id64))
+            user=User.objects.get(id=id)
+            if not PasswordResetTokenGenerator().check_token(user,token):
+
+                return Response({"Error":"Token is not valid, Please request a new one "},status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"success":True,"message":"Credentials is valid" ,"u_id64":u_id64,"token":token},status=status.HTTP_200_OK)
+            
+        except DjangoUnicodeDecodeError as identifier:
+            if not PasswordResetTokenGenerator():
+                return Response({"Error":"Token is not valid, Please request a new one "},status=status.HTTP_401_UNAUTHORIZED)
 class SetNEwPasswordAPIView(generics.GenericAPIView):
     serializer_class = SetNEwPasswordSerializer
 
@@ -131,6 +153,7 @@ class SetNEwPasswordAPIView(generics.GenericAPIView):
         return Response({'Success':True, 'messsage':'Password reset success'},status=status.HTTP_200_OK)
 
 class UserProfileAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     """
     Provides a get post put delete method handler.
@@ -141,21 +164,12 @@ class UserProfileAPIView(APIView):
         userprofiles = UserProfile.objects.all()
         serializer = UserProfileSerializer(userprofiles, many=True)
         return Response(serializer.data)
-    
-    # def post(self,request):
-      
-    #     serializer = UserProfileSerializer(data=request.data)
-
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
-
-    #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class SingleUserProfileAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self,pk):
+        
         try:
             return UserProfile.objects.get(pk=pk)
         except UserProfile.DoesNotExist:
@@ -163,7 +177,7 @@ class SingleUserProfileAPIView(APIView):
 
     def get(self,request,pk):
         profile = self.get_object(pk)
-        serializer = UserProfileSerializer(pk)
+        serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
 
     def put(self,request,pk):
