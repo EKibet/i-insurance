@@ -3,6 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=django
 
 ### Django ###
+virtual/
 *.log
 *.pot
 *.pyc
@@ -125,7 +126,6 @@ env.bak/
 venv.bak/
 pythonenv*
 virtual/
-
 # Spyder project settings
 .spyderproject
 .spyproject
