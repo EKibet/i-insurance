@@ -2,6 +2,7 @@ from rest_framework import serializers
 from policy.models import User
 from .models import UserProfile,Policy
 
+
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,6 +26,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 class PolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = Policy
-        fields =( 'id', 'user', 'category', 'policy_number', 'policy_contact', 'form', 'slug', 'signed', 'updated')
+        fields =( 'id', 'user', 'category', 'policy_number', 'policy_contact', 'form', 'signed', 'updated')
 
 

@@ -183,3 +183,5 @@ cloudinary.config(
   api_key = "447468715252465", 
   api_secret = "VSquGjV4IRTcJID7brmZlvBG4nY" 
 )
+
+APPEND_SLASH=False

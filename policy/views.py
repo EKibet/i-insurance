@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics,status
 from .serializers import RegisterSerializer,UserSerializer
+from django.http import HttpResponse, Http404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
@@ -50,7 +51,7 @@ class policyList(APIView):
 
 
 class PolicyDescription(APIView):
-    def get_Policy(self,pk):
+    def get_policy(self,pk):
         try:
             return Policy.objects.get(pk=pk)
         except Policy.DoesNotExist:
@@ -67,11 +68,11 @@ class PolicyDescription(APIView):
     def put(self, request,pk, formart= None):
         policy = self.get_policy(pk)
         serializer = PolicySerializer(policy, request.data)
-        if serializers.is_valid():
+        if serializer.is_valid():
 
-            return Response(serializers.data)
+            return Response(serializer.data)
         else:
-            return Response(serializers.errors, status= status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
 
 
     

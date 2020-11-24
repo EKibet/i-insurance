@@ -105,18 +105,17 @@ class Policy(models.Model):
     policy_number = models.CharField(max_length=20)
     policy_contact = models.CharField(max_length=30)
     form = models.TextField(max_length=300)
-    slug = models.SlugField(max_length=200, db_index=True)
-    signed = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    signed = models.DateField(auto_now_add=True)
+    updated = models.DateField(auto_now=True)
     def __str__(self):
         return self.policy_number
     def post_product(self):
-        self.save()
+        self.save() 
     def delete_product(self):
         self.delete()
     class Meta:
         ordering = ('-signed',)
-        index_together = (('id', 'slug'),)
+        index_together = (('id'),)
     def __str__(self):
         return self.policy_number
     def get_absolute_url(self):
