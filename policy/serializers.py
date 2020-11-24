@@ -8,9 +8,10 @@ from django.utils.encoding import (DjangoUnicodeDecodeError, force_str,
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 # from django.contrib.auth import authenticate
 from rest_framework import serializers
-
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User,UserProfile,Policy
 from rest_framework.exceptions import AuthenticationFailed
+
 
 from .models import *
 
@@ -98,6 +99,22 @@ class SetNEwPasswordSerializer(serializers.Serializer):
             raise AuthenticationFailed("The restlink is invalid ",401)
         return super().validate(attrs)
 
+
+class LogoutSerislizer(serializers.Serializer):
+    refresh = serializers.CharField()
+    default_error_messages = {
+        'Bad_Token':{'Token is expired or invalid'}
+    }
+    def validate(self,attrs):
+        self.token = attrs['refresh']
+
+        return attrs
+
+    def save(self,**kwargs):
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError:
+            self.fail('Bad_Token')
 
 class EmailVerificationSerializer(serializers.ModelSerializer):
 
