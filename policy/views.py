@@ -1,3 +1,4 @@
+
 import json
 
 import jwt
@@ -8,7 +9,7 @@ from django.contrib.auth import get_user_model as user_model
 from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated  
-from rest_framework import viewsets
+from rest_framework import viewsets,permissions
 from rest_framework.views import  APIView
 from .models import User,UserProfile
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -31,7 +32,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (EmailVerificationSerializer, LoginSerializer,
                           RegisterSerializer, RequestPasswordResetSerializer,
-                          SetNEwPasswordSerializer, UserSerializer,UserProfileSerializer)
+                          SetNEwPasswordSerializer, UserSerializer,UserProfileSerializer,LogoutSerislizer)
 from .utils import Util
 
 
@@ -178,5 +179,17 @@ class SingleUserProfileAPIView(APIView):
     def delete(self,request,pk):
         profile = self.get_object(pk)
         profile.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class LogoutAPIView(generics.GenericAPIView):
+
+    serializer_class = LogoutSerislizer
+    permission_classes = (permissions.IsAuthenticated)
+
+    def  post(self,request):
+        serializer = serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
