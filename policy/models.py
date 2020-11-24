@@ -74,7 +74,8 @@ class User(AbstractBaseUser,PermissionsMixin):
     bio = models.TextField(max_length=500, blank=True, null=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    is_active  =models.BooleanField(default=True)
+    is_active =models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
     
     USERNAME_FIELD = 'email'
@@ -125,7 +126,7 @@ class Policy(models.Model):
         self.delete()
     class Meta:
         ordering = ('-signed',)
-        index_together = (('id', 'slug'),)
+        index_together = (('id',),)
 
 
         
