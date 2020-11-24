@@ -152,6 +152,7 @@ class SetNEwPasswordAPIView(generics.GenericAPIView):
         return Response({'Success':True, 'messsage':'Password reset success'},status=status.HTTP_200_OK)
 
 class UserProfileAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     """
     Provides a get post put delete method handler.
@@ -162,19 +163,9 @@ class UserProfileAPIView(APIView):
         userprofiles = UserProfile.objects.all()
         serializer = UserProfileSerializer(userprofiles, many=True)
         return Response(serializer.data)
-    
-    # def post(self,request):
-      
-    #     serializer = UserProfileSerializer(data=request.data)
-
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
-
-    #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class SingleUserProfileAPIView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self,pk):
         
