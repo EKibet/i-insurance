@@ -1,14 +1,15 @@
 from django.contrib import admin
-from .models import User, Category, Policy,AdminProfile,UserProfile,AgentProfile
 from django.contrib.auth.admin import UserAdmin
+from . models import Category, Policy, UserManager, User, UserProfile, AdminProfile, AgentProfile
 
 
-
-# Register your models here.
-admin.site.register(User)
-admin.site.register(AdminProfile)
-admin.site.register(Category)
-admin.site.register(Policy)
-admin.site.register(UserProfile)
+# register your models here
 admin.site.register(AgentProfile)
+admin.site.register(AdminProfile)
+admin.site.register(UserProfile)
+admin.site.register(Policy)
+admin.site.register(Category)
+admin.site.register(User)
+
+
 
