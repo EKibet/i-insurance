@@ -201,7 +201,6 @@ STATICFILES_DIRS = (
 
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
-django_heroku.settings(locals())
 
 
 AUTH_USER_MODEL = 'policy.User'
@@ -217,3 +216,5 @@ EMAIL_USE_TLS = True
 cloudinary.config(cloud_name=config('cloud_name'),api_key=config('api_key'),api_secret=config('api_secret'))
 CLOUDINARY_FOLDER = 'CLOUD_FOLDER'
 
+
+django_heroku.settings(locals())
