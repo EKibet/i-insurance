@@ -16,7 +16,7 @@ from django.contrib.auth.models import PermissionsMixin
 # accounts.models.py
 class UserManager(BaseUserManager):
 
-    def create_user(self,first_name,middle_name,last_name, email, password=None):
+    def create_user(self, email,first_name,middle_name,last_name,password=None):
 
         """
         Creates and saves a User with the given email and password.
@@ -79,7 +79,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    # REQUIRED_FIELDS = ['']
     objects = UserManager() 
 
     def get_full_name(self):

@@ -211,7 +211,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
-EMAIL_HOST_PASSWORD = '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'
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 cloudinary.config(cloud_name=config('cloud_name'),api_key=config('api_key'),api_secret=config('api_secret'))
