@@ -133,7 +133,7 @@ class VerifyEmail(views.APIView):
 class PasswordTokenCheckAPI(generics.GenericAPIView):
     def get(self,request,u_id64,token):
         try:
-            id=smart_bytes(urlsafe_base64_encode(u_id64))
+            id=smart_bytes(urlsafe_base64_decode(u_id64))
             user=User.objects.get(id=id)
             if not PasswordResetTokenGenerator().check_token(user,token):
 
@@ -146,7 +146,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
 class SetNEwPasswordAPIView(generics.GenericAPIView):
     serializer_class = SetNEwPasswordSerializer
 
-    def patch(self,requeest):
+    def patch(self,request):
         serializer=self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'Success':True, 'messsage':'Password reset success'},status=status.HTTP_200_OK)

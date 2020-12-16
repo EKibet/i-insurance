@@ -84,18 +84,19 @@ class SetNEwPasswordSerializer(serializers.Serializer):
         try:
             password = attrs.get('password')
             token = attrs.get('token')
-            u_id64 = attrs.get('uidb64')
+            u_id64 = attrs.get('u_id64')
 
-            id=force_str(urlsafe_base64_encode(u_id64))
+            id=force_str(urlsafe_base64_decode(u_id64))
             user = User.objects.get(id=id)
-
+            # import pdb; pdb.set_trace()
             if not PasswordResetTokenGenerator().check_token(user,token):
-                raise AuthenticationFailed("The restlink is invalid ",401)
+                raise AuthenticationFailed("The rest token is invalid ",401)
 
-            user.Set_password(password)
-            user.save
+            user.set_password(password)
+            user.save()
+            return (user)
         except Exception as e:
-            raise AuthenticationFailed("The restlink is invalid ",401)
+            raise AuthenticationFailed("The restlinks is invalid ",401)
         return super().validate(attrs)
 
 
