@@ -3,6 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=django
 
 ### Django ###
+virtual/
 *.log
 *.pot
 *.pyc
@@ -115,7 +116,6 @@ celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
-
 # Environments
 .env
 .venv
@@ -125,7 +125,7 @@ ENV/
 env.bak/
 venv.bak/
 pythonenv*
-
+virtual/
 # Spyder project settings
 .spyderproject
 .spyproject
